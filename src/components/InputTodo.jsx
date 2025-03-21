@@ -7,19 +7,25 @@ const style = {
   borderRadius: "8px"
 };
 
-export const InputTodo = (props) => {
-  const { todoText, onChange, onClick, disabled } = props;
+export function InputTodo({ disabled, formAction }) {
+  // フォーム送信時のデフォルト動作を防止するラッパー関数
+  const handleSubmit = (formData) => {
+    formAction(formData);
+    return false;
+  };
+
   return (
     <div style={style}>
-      <input
-        disabled={disabled}
-        placeholder="TODOを入力"
-        value={todoText}
-        onChange={onChange}
-      />
-      <button disabled={disabled} onClick={onClick}>
-        追加
-      </button>
+      <form action={handleSubmit}>
+        <input
+          disabled={disabled}
+          placeholder="TODOを入力"
+          name="todoText"
+        />
+        <button type="submit" disabled={disabled}>
+          追加
+        </button>
+      </form>
     </div>
   );
-};
+}

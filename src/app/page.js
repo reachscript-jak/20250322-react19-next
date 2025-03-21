@@ -1,23 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import { CompleteTodos } from "../components/CompleteTodos";
 import { IncompleteTodos } from "../components/IncompleteTodos";
 import { InputTodo } from "../components/InputTodo";
 
 export default function Todo() {
-  const [todoText, setTodoText] = useState("");
+  const [todoText, formAction, isPending] = useActionState(async (prevState, formData) => {
+    const todoText = formData.get("todoText");
+    if (todoText && todoText !== "") {
+      const newTodos = [...incompleteTodos, todoText];
+      setIncompleteTodos(newTodos);
+    }
+    return "";
+  }, '');
+
   const [incompleteTodos, setIncompleteTodos] = useState([]);
   const [completeTodos, setCompleteTodos] = useState([]);
-
-  const onChangeTodoText = (event) => setTodoText(event.target.value);
-
-  const onClickAdd = () => {
-    if (todoText === "") return;
-    const newTodos = [...incompleteTodos, todoText];
-    setIncompleteTodos(newTodos);
-    setTodoText("");
-  };
 
   const onClickDelete = (index) => {
     const newTodos = [...incompleteTodos];
@@ -49,10 +48,8 @@ export default function Todo() {
   return (
     <>
       <InputTodo
-        todoText={todoText}
-        onChange={onChangeTodoText}
-        onClick={onClickAdd}
         disabled={isMaxLimitIncompleteTodos}
+        formAction={formAction}
       />
       {isMaxLimitIncompleteTodos && (
         <p style={{ color: "red" }}>
